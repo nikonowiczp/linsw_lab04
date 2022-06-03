@@ -1,0 +1,7 @@
+{% for item in playlist %}
+<li style=""><a >{{ item['name'] }}  </a>
+    <form action={{ "/action?method=play-now&file = item['name'] "}}>
+        <input type="submit" value="&#9658;" />
+    </form>
+</li>
+{% end %}

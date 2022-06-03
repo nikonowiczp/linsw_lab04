@@ -1,0 +1,7 @@
+{% for item in songs %}
+<li><a href={{ "/download?filename="+ item['name'] }}>{{ item['name'] }}</a>
+  <form action={{ "/action?action-type=add-to-playlist&filename=" + item['name'] }}>
+    <input type="submit" value="&#9658;" />
+</form>
+</li>
+{% end %}

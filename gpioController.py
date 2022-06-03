@@ -1,22 +1,24 @@
+from calendar import c
 from threading import Thread
 from unittest import skip
 import time;
+import sys;
 import gpiod;
 import mpd;
 
-requestedButtons = [1,2,3,4]
+requestedButtons = [25,10,17,18]
 requestedButtonsNice = {
     "pause-play" : requestedButtons[0],
     "volume-up" : requestedButtons[1],
     "volume-down" : requestedButtons[2],
     "skip" : requestedButtons[3]
-}
-requestedLeds = [1,2]
+};
+requestedLeds = [23,27]
 requestedLedsNice = {
     "pause-play" : requestedLeds[0],
     "blinking" : requestedLeds[1],
-}
-
+};
+currVolume = 50;
 
 
 isCurrentlyPlaying = False;
@@ -34,7 +36,7 @@ def pause_play():
         play()
 
 def pause():
-    led = leds.get(requestedLedsNice["pause-play"])
+    led = leds[1];
     led.set_value(0);
     mpdClient.connect("localhost",6600);
     mpdClient.pause(1);
@@ -42,31 +44,32 @@ def pause():
 
 
 def play():
-    led = leds.get(requestedLedsNice["pause-play"])
+    led = leds[1]
     led.set_value(1);
     mpdClient.connect("localhost",6600);
     mpdClient.pause(0);
     mpdClient.disconnect();
 
 def volumeUp():
-    led = leds.get(requestedLedsNice["blinking"])
+    led = leds[0];
     led.set_value(1);
     mpdClient.connect("localhost",6600);
-    mpdClient.volume(5);
+    currVolume = min(100, currVolume+5)
+    mpdClient.setvol(currVolume);
     mpdClient.disconnect();
     time.sleep(0.3);
     led.set_value(0);
-    pass
 
 def volumeDown():
-    led = leds.get(requestedLedsNice["blinking"])
+    led = leds[0];
     led.set_value(1);
     mpdClient.connect("localhost",6600);
-    mpdClient.volume(-5);
+    currVolume = max(0, currVolume-5);
+    mpdClient.setvol(currVolume);
     mpdClient.disconnect();
     time.sleep(0.3);
     led.set_value(0);
-    pass
+
 
 
 
@@ -91,18 +94,27 @@ def buttonLoop():
                 elif (currOffset == requestedButtonsNice["skip"]):
                     skipSong();
 
+if (len(sys.argv) < 2):
+    print('Path to music not found')
+    exit();
+
+path_to_music = sys.argv[1]
 
 chip = gpiod.Chip("gpiochip0");
 buttons = chip.get_lines(requestedButtons);
-leds = chip.get_lines(requestedLeds);
-
+leds = []; 
+for ledNum in requestedLeds:
+    pin = chip.get_lines([ledNum]);
+    pin.request(consumer="consumer", type=gpiod.LINE_REQ_DIR_OUT);
+    leds.append(pin);
+#chip.get_lines(requestedLeds);
 
 buttons.request(consumer="app", type=gpiod.LINE_REQ_EV_FALLING_EDGE);
-leds.request(consumer="app", type=gpiod.LINE_REQ_DIR_OUT);
 
 mpdClient = mpd.MPDClient();
 mpdClient.connect("localhost",6600);
-mpdClient.add();
+mpdClient.add("rickroll.mp3");
+mpdClient.play();
 mpdClient.disconnect();
 
 btnThread = Thread(target=buttonLoop);

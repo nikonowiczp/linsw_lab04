@@ -6,11 +6,10 @@ import tornado.template;
 import os;
 import sys;
 from urllib import parse
-#from gpioController import *
 
 cookieSecret='aaDa23dsf@#$!'
 
-
+mpdFileActions=["add-to-playlist", "play-now", "pause", "start"]
 
     
 class IHandler(tornado.web.RequestHandler):
@@ -18,21 +17,14 @@ class IHandler(tornado.web.RequestHandler):
     
 class RootHandler(IHandler):
     def get(self):
-        if not self.get_secure_cookie("user"):
-            self.redirect("/login")
-            return;
-        if not self.isAdmin():
-            self.clear_all_cookies();
-            self.set_status(400)
-            self.finish("<html><body>Error while logging in. Check your login and password</body></html>")
-        self.redirect("/list");
+        self.redirect("/panel");
 
 class ControlPanelHandler(IHandler):
     def get(self):
-        songsList = create_list(path_to_music);
+        data = create_data(path_to_music);
         uploadMessage = "";
 
-        self.render("tree.html", songs=songsList);
+        self.render("controlPanel.html", data=data);
 
 class UploadHandler(IHandler):
     def post(self):
@@ -51,7 +43,7 @@ class UploadHandler(IHandler):
 class MpdAction(IHandler):
     def post(self):
         filename=self.get_argument('filename', None)
-        action = self.get_argument('Action',  None)
+        action = self.get_argument('action-type',  None)
         if not filename:
             self.write({"error":"File name is empty"})
             return
@@ -63,8 +55,11 @@ class MpdAction(IHandler):
         elif action == 2:
             pass
 
-def create_list(path):
-    list = dict(name="Songs listing", songs=[])
+def create_data(path):
+    list = {
+        "playlist":[],
+        "songs":[]
+    }
     lst = os.listdir(path)
     for name in lst:
         fullpath = os.path.join(path, name)
@@ -72,21 +67,30 @@ def create_list(path):
         if os.path.isdir(fullpath):
             pass
         else:
-            list['songs'].append(dict(name=name))    
+            list['songs'].append(dict(name=name))
+    mpdClient.connect("localhost",6600);
+    playlist = mpdClient.playlistinfo();
+    mpdClient.disconnect();
+    print(playlist)
     return list
 
 
 #arguments - [pathToCerts] [pathToMusic]
 if (len(sys.argv) != 3):
-    print('Bad arguments! Usage - server.py [pathToCerts] [pathToMusic]')
+    print('Bad arguments! Usage - server.py [pathToMusic] [pathToCerts]')
     exit();
-data_dir = sys.argv[1]
-path_to_music = sys.argv[2]
+data_dir = sys.argv[2]
+path_to_music = sys.argv[1]
+
+#
+from gpioController import *
+
 
 application = tornado.web.Application([
     (r"/", RootHandler),
     (r"/panel", ControlPanelHandler),
-
+    (r"/upload", UploadHandler),
+    (r"/action", MpdAction),
 ], cookie_secret=cookieSecret)
 
 http_server = tornado.httpserver.HTTPServer(application, ssl_options={

@@ -1,6 +1,0 @@
-{% for item in children %}
-<li><a href={{ "/download?filename="+ item['name'] }}>{{ item['name'] }}</a>
-{% if "children" in item %}
-  <ul>{% module Template('items.html', children=item['children']) %}</ul>
-{% end %}</li>
-{% end %}
