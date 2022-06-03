@@ -1,0 +1,12 @@
+<div class="center" style="margin: auto;">
+
+    <form action="/upload" method="post" style="border: 2px solid purple; margin-top: 15px; width: 300px;" enctype="multipart/form-data">
+                   <div style="margin: 10px;"><input type="file" name="inputFile"></div>
+                   <div style="margin: 10px;font-size: 12px;">Path: <input type="text" name="uploadPath"></div>
+                   <div style="margin: 10px;"><input type="submit" value="Upload"> <span style="font-size: 12px;">{{ uploadMessage }}</span></div>
+    </form>
+    <button><a href="/logout">Logout</a></button>
+
+    <ul>{% module Template('items.html', children=tree['children']) %}</ul>
+  </div>
+  

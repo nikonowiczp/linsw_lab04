@@ -1,0 +1,9 @@
+<div class="center" style="margin: auto;">
+
+    <form action="/upload" method="post" style="margin-top: 20px; width: 500px;" enctype="multipart/form-data">
+                   <div style="margin: 10px;"><input type="file" name="inputFile"></div>
+                   <div style="margin: 10px;"><input type="submit" value="Upload"> <span style="font-size: 12px;">{{ uploadMessage }}</span></div>
+    </form>
+    <ul>{% module Template('songslist.html', songs=songs['songs']) %}</ul>
+  </div>
+  
