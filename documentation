@@ -1,4 +1,3 @@
 rm server.tar && tar -cf server.tar * && python3 -m http.server
 
-touch file && rm -r ./* && wget nikonowicz@192.168.145.99:8000/server.tar && t
-ar -xf server.tar && python server.py /tmp/d /opt/python_server/ca/certs
+touch file && rm -r ./* && wget nikonowicz@192.168.145.99:8000/server.tar && tar -xf server.tar && python server.py /tmp/d /opt/python_server/ca/certs
