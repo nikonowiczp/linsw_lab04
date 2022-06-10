@@ -77,22 +77,23 @@ def skipSong():
     pass
 
 def buttonLoop():
-    while True:
+    pass
+    #while True:
         #event_wait only gets lines that had an event
-        eventLines = buttons.event_wait(sec=1);
-        if eventLines:
-            for line in eventLines:
-                eventLine = line.event_read();
-                currOffset = eventLine.source.offset();
-
-                if (currOffset == requestedButtonsNice["pause-play"]):
-                    pause_play();
-                elif (currOffset == requestedButtonsNice["volume-up"]):
-                    volumeUp();
-                elif (currOffset == requestedButtonsNice["volume-down"]):
-                    volumeDown();
-                elif (currOffset == requestedButtonsNice["skip"]):
-                    skipSong();
+        #eventLines = buttons.event_wait(sec=1);
+        #if eventLines:
+        #    for line in eventLines:
+        #        eventLine = line.event_read();
+        #        currOffset = eventLine.source.offset();
+#
+        #        if (currOffset == requestedButtonsNice["pause-play"]):
+        #            pause_play();
+        #        elif (currOffset == requestedButtonsNice["volume-up"]):
+        #            volumeUp();
+        #        elif (currOffset == requestedButtonsNice["volume-down"]):
+        #            volumeDown();
+        #        elif (currOffset == requestedButtonsNice["skip"]):
+        #            skipSong();
 
 if (len(sys.argv) < 2):
     print('Path to music not found')
