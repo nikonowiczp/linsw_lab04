@@ -9,7 +9,7 @@ from urllib import parse
 
 cookieSecret='aaDa23dsf@#$!'
 
-mpdFileActions=["add-to-playlist", "play-now", "pause", "start"]
+mpdFileActions=["add-to-playlist", "play", "pause", "skip", "start", "delete-from-playlist"]
 
     
 class IHandler(tornado.web.RequestHandler):
@@ -37,23 +37,45 @@ class UploadHandler(IHandler):
             return;
         outputFile.write(inputFile['body'])
         outputFile.close();
-
+        mpdClient.connect("localhost",6600);
+        mpdClient.update();
+        mpdClient.disconnect();
         self.redirect("/panel");
 
 class MpdAction(IHandler):
     def post(self):
-        filename=self.get_argument('filename', None)
+        data=self.get_argument('data', None)
         action = self.get_argument('action-type',  None)
-        if not filename:
-            self.write({"error":"File name is empty"})
+        if not data:
+            self.write({"error":"Data is empty"})
             return
         if not action:
             self.write({"error":"Action is empty"})
             return
-        if action == 1:
-            pass
-        elif action == 2:
-            pass
+        if action not in mpdFileActions:
+            self.write({"error":"Action is invalid"})
+        if action == "delete-from-playlist":
+            mpdClient.connect("localhost",6600);
+            mpdClient.deleteid(data);
+            mpdClient.disconnect();
+        elif action == "add-to-playlist":
+            mpdClient.connect("localhost",6600);
+            mpdClient.add(data);
+            mpdClient.disconnect();
+        elif action == "play":
+            mpdClient.connect("localhost",6600);
+            mpdClient.pause(0);
+            mpdClient.disconnect();
+        elif action == "pause":
+            mpdClient.connect("localhost",6600);
+            mpdClient.pause(1);
+            mpdClient.disconnect();
+        elif action == "skip":
+            mpdClient.connect("localhost",6600);
+            mpdClient.next();
+            mpdClient.disconnect();
+        self.redirect("/panel");
+
 
 def create_data(path):
     list = {
@@ -70,8 +92,10 @@ def create_data(path):
             list['songs'].append(dict(name=name))
     mpdClient.connect("localhost",6600);
     playlist = mpdClient.playlistinfo();
+    list['status'] = mpdClient.status()['state']
     mpdClient.disconnect();
     print(playlist)
+    list['playlist'] = playlist;
     return list
 
 
