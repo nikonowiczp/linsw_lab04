@@ -1,8 +1,8 @@
 {% for item in songs %}
-<li style="display: inline">
-  <a style="display: inline" href={{ "/download?filename="+ item['name'] }}>{{ item['name'] }}</a>
-  <form style="display: inline" action={{ "/action?action-type=add-to-playlist&data=" + item['name'] }} method="post">
+<li>
+  <a style="display: inline">{{ item['name'] }}</a>
+  <form style="display: inline" action={{ "/action?action-type=add-to-playlist&data=" + item['name'].replace(' ', '%20') }} method="post">
     <input type="submit" value="&#9658;" />
-
+  </form> 
 </li>
 {% end %}

@@ -4,7 +4,7 @@
                    <div style="margin: 10px;"><input type="file" name="inputFile"></div>
                    <div style="margin: 10px;"><input type="submit" value="Upload"> <span style="font-size: 12px;">Upload</span></div>
     </form>
-    <p>{{ 'Current status: ' + data['status'] }}</p>
+    <p>{{ 'Current status: ' + data['status'] + ' Volume: '+ data['volume'] }}</p>
     <form style="display: inline" action={{ "/action?action-type=play&data=test"}} method="post">
       <input type="submit" value="&#x25B6;" />
     </form>
@@ -13,6 +13,12 @@
     </form>
     <form style="display: inline" action={{ "/action?action-type=skip&data=test"}} method="post">
       <input type="submit" value="&#x23ed;" />
+    </form>
+    <form style="display: inline" action={{ "/action?action-type=volume-up&data=test"}} method="post">
+      <input type="submit" value="Volume up" />
+    </form>
+    <form style="display: inline" action={{ "/action?action-type=volume-down&data=test"}} method="post">
+      <input type="submit" value="Volume down" />
     </form>
     <p>Songs in folder</p>
     <ul>{% module Template('songslist.html', songs=data['songs']) %}</ul>

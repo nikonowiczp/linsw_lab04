@@ -9,7 +9,7 @@ from urllib import parse
 
 cookieSecret='aaDa23dsf@#$!'
 
-mpdFileActions=["add-to-playlist", "play", "pause", "skip", "start", "delete-from-playlist"]
+mpdFileActions=["add-to-playlist", "play", "pause", "skip", "start", "delete-from-playlist","play-now", "move-up", "move-down", "move-first", "volume-up", "volume-down"]
 
     
 class IHandler(tornado.web.RequestHandler):
@@ -60,11 +60,13 @@ class MpdAction(IHandler):
             mpdClient.disconnect();
         elif action == "add-to-playlist":
             mpdClient.connect("localhost",6600);
+            mpdClient.update();
+            print('Addding song to playlist: '+data)
             mpdClient.add(data);
             mpdClient.disconnect();
         elif action == "play":
             mpdClient.connect("localhost",6600);
-            mpdClient.pause(0);
+            mpdClient.play();
             mpdClient.disconnect();
         elif action == "pause":
             mpdClient.connect("localhost",6600);
@@ -73,6 +75,30 @@ class MpdAction(IHandler):
         elif action == "skip":
             mpdClient.connect("localhost",6600);
             mpdClient.next();
+            mpdClient.disconnect();
+        elif action == "move-up":
+            mpdClient.connect("localhost",6600);
+            mpdClient.next();
+            mpdClient.disconnect();
+        elif action == "move-down":
+            mpdClient.connect("localhost",6600);
+            mpdClient.next();
+            mpdClient.disconnect();
+        elif action == "move-first":
+            mpdClient.connect("localhost",6600);
+            mpdClient.next();
+            mpdClient.disconnect();
+        elif action == "volume-up":
+            mpdClient.connect("localhost",6600);
+            mpdClient.volume(+5);
+            mpdClient.disconnect();
+        elif action == "volume-down":
+            mpdClient.connect("localhost",6600);
+            mpdClient.volume(-5);
+            mpdClient.disconnect();
+        elif action =="play-now":
+            mpdClient.connect("localhost",6600);
+            mpdClient.playid(data);
             mpdClient.disconnect();
         self.redirect("/panel");
 
@@ -92,9 +118,11 @@ def create_data(path):
             list['songs'].append(dict(name=name))
     mpdClient.connect("localhost",6600);
     playlist = mpdClient.playlistinfo();
-    list['status'] = mpdClient.status()['state']
+    mpdState = mpdClient.status()
+    list['status'] = mpdState['state']
+    list['volume'] = 'undefined'
+    list['volume'] = mpdState['volume']
     mpdClient.disconnect();
-    print(playlist)
     list['playlist'] = playlist;
     return list
 

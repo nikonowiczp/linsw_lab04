@@ -1,14 +1,25 @@
 {% for item in playlist %}
 <li>
 
-    <a style="display: inline">{{ 'Id: '+item['id']+ ' Title: ' + item['title'] + ' Artist: '+item['artist'] }}  </a>
+    <a style="display: inline">{{ 'Id: '+item['id']+ ' Title: ' + item['file'] }}  </a>
     
     <form style="display: inline" action={{ "/action?action-type=delete-from-playlist&data=" +item['id'] }} method="post">
         <input type="submit" value="Delete" />
     </form>
-    <form style="display: inline" action={{ "/action?action-type=play-now&file = item['name'] "}} method="post">
+    <form style="display: inline" action={{ "/action?action-type=play-now&data=" + item['id'] }} method="post">
         <input type="submit" value="&#9658;" />
     </form>
+    <!-- 
+    <form style="display: inline" action={{ "/action?action-type=move-upfile&data = item['name'] "}} method="post">
+        <input type="submit" value="&#x2191;" />
+    </form>
+    <form style="display: inline" action={{ "/action?action-type=move-down&data = item['name'] "}} method="post">
+        <input type="submit" value="&#x2193;" />
+    </form>
+    <form style="display: inline" action={{ "/action?action-type=move-first&data = item['name'] "}} method="post">
+        <input type="submit" value="&#9658;" />
+    </form>
+    -->
 
 </li>
 {% end %}
